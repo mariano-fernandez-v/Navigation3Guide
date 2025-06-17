@@ -1,4 +1,4 @@
-package com.plcoding.navigation3guide.navigation
+package com.plcoding.navigation3guide.navigation.scenes
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row

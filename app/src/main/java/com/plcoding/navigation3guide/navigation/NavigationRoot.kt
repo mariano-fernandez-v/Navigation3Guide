@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,48 +17,55 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavEntry
-import androidx.navigation3.runtime.NavEntryWrapper
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
-import androidx.navigation3.ui.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import com.plcoding.navigation3guide.navigation.graphs.HomeGraph
+import com.plcoding.navigation3guide.navigation.graphs.NoteGraph
+import com.plcoding.navigation3guide.navigation.saver.rememberMutableStateListOf
+import com.plcoding.navigation3guide.navigation.scenes.TwoPaneSceneStrategy
 import com.plcoding.navigation3guide.note.NoteDetailScreenUi
 import com.plcoding.navigation3guide.note.NoteListScreenUi
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import java.util.Map.entry
 
 
 @Composable
 fun NavigationRoot(
     modifier: Modifier = Modifier
 ) {
-    val backStack = rememberNavBackStack<NavKey>(Destinations.NoteListScreen)
+    var currentBottomBarScreen: NavKey by rememberSaveable(stateSaver = BottomBarScreenSaver) {
+        mutableStateOf(Destinations.NoteListScreen)
+    }
+
+    val backStack = rememberMutableStateListOf<NavKey>(Destinations.NoteGraph)
+
+    val stateHolder = rememberSaveableStateHolder()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             BottomBar(
-                currentDestination = backStack.last(),
+                currentDestination = currentBottomBarScreen,
                 onDestinationClicked = { destination ->
-                    backStack.removeLastOrNull()
-                    backStack.add(destination)
+                    if (backStack.lastOrNull() != destination) {
+                        backStack.removeLastOrNull()
+                        backStack.add(destination)
+                        currentBottomBarScreen = destination
+                    }
                 }
             )
         }
@@ -71,42 +77,18 @@ fun NavigationRoot(
             entryDecorators = listOf(
                 rememberSavedStateNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator(),
-                rememberSceneSetupNavEntryDecorator()
             ),
-            sceneStrategy = TwoPaneSceneStrategy(),
             entryProvider = entryProvider {
-                entry<Destinations.NoteListScreen> { entry ->
-                    NoteListScreenUi(
-                        onNoteClick = { noteId ->
-                            backStack.add(Destinations.NoteDetailScreen(noteId))
-                        }
-                    )
+                entry<Destinations.NoteGraph> { entry ->
+                    stateHolder.SaveableStateProvider(entry.title) {
+                        NoteGraph()
+                    }
                 }
 
-                entry<Destinations.NoteDetailScreen> { entry ->
-                    NoteDetailScreenUi(
-                        viewModel = koinViewModel {
-                            parametersOf(entry.id)
-                        }
-                    )
-                }
-
-                entry<Destinations.Home> { entry ->
-                    Profile(
-                        name = "Cucuruxo",
-                        onNavigate = { destination ->
-                            backStack.add(destination)
-                        }
-                    )
-                }
-
-                entry<Destinations.NameEditDialog> { entry ->
-                    Text("Name Edit Dialog")
-
-                }
-
-                entry<Destinations.NameEditScreen> { entry ->
-                    Text("Name Edit Screen")
+                entry<Destinations.HomeGraph> { entry ->
+                    stateHolder.SaveableStateProvider(entry.title) {
+                        HomeGraph()
+                    }
                 }
             }
         )
@@ -149,67 +131,23 @@ private val Items = listOf(
         0,
         "Home",
         Icons.Default.Home,
-        Destinations.Home,
+        Destinations.HomeGraph,
     ),
     Item(
         1,
         "List",
         Icons.Default.List,
-        Destinations.NoteListScreen,
+        Destinations.NoteGraph,
     ),
 )
 
-
-internal sealed interface Destinations : NavKey {
-    @Serializable
-    data object Home : NavKey
-
-    @Serializable
-    data object NoteListScreen : NavKey
-
-    @Serializable
-    data class NoteDetailScreen(val id: Int) : NavKey
-
-    @Serializable
-    data object NameEditDialog : NavKey
-
-    @Serializable
-    data object NameEditScreen : NavKey
-
-}
-
-@Composable
-private fun Profile(
-    name: String,
-    onNavigate: (NavKey) -> Unit,
-) {
-    var times by rememberSaveable { mutableIntStateOf(0) }
-
-    Column(
-        Modifier
-            .fillMaxSize()
-            .wrapContentSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text("Profile")
-
-        Text("Name: $name, changed: $times")
-
-        OutlinedButton(
-            onClick = {
-                times++
-                onNavigate(Destinations.NameEditDialog)
-            },
-        ) {
-            Text("Change Name Dialog")
-        }
-        OutlinedButton(
-            onClick = {
-                times++
-                onNavigate(Destinations.NameEditScreen)
-            },
-        ) {
-            Text("Change Name Screen")
+val BottomBarScreenSaver = Saver<NavKey, String>(
+    save = { it::class.simpleName ?: "Uknown" },
+    restore = {
+        when (it) {
+            Destinations.HomeGraph::class.simpleName -> Destinations.HomeGraph
+            Destinations.NoteGraph::class.simpleName -> Destinations.NoteGraph
+            else -> Destinations.HomeGraph
         }
     }
-}
+)

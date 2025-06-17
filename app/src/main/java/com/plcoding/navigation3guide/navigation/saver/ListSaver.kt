@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.plcoding.navigation3guide.navigation
+package com.plcoding.navigation3guide.navigation.saver
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.Saver
