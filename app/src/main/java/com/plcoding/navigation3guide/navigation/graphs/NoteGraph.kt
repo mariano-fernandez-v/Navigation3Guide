@@ -10,7 +10,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.plcoding.navigation3guide.navigation.Destinations
+import com.plcoding.navigation3guide.navigation.Destination
 import com.plcoding.navigation3guide.note.NoteDetailScreenUi
 import com.plcoding.navigation3guide.note.NoteListScreenUi
 import org.koin.androidx.compose.koinViewModel
@@ -18,7 +18,7 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun NoteGraph() {
-    val backStack = rememberNavBackStack<NavKey>(Destinations.NoteListScreen)
+    val backStack = rememberNavBackStack<NavKey>(Destination.NoteListScreen)
 
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
@@ -29,15 +29,15 @@ fun NoteGraph() {
             rememberViewModelStoreNavEntryDecorator(),
         ),
         entryProvider = entryProvider {
-            entry<Destinations.NoteListScreen> { entry ->
+            entry<Destination.NoteListScreen> { entry ->
                 NoteListScreenUi(
                     onNoteClick = { noteId ->
-                        backStack.add(Destinations.NoteDetailScreen(noteId))
+                        backStack.add(Destination.NoteDetailScreen(noteId))
                     }
                 )
             }
 
-            entry<Destinations.NoteDetailScreen> { entry ->
+            entry<Destination.NoteDetailScreen> { entry ->
                     NoteDetailScreenUi(
                         viewModel = koinViewModel {
                             parametersOf(entry.id)

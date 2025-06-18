@@ -11,12 +11,12 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.plcoding.navigation3guide.navigation.Destinations
+import com.plcoding.navigation3guide.navigation.Destination
 import com.plcoding.navigation3guide.profile.Profile
 
 @Composable
 fun HomeGraph() {
-    val backStack = rememberNavBackStack<NavKey>(Destinations.Home)
+    val backStack = rememberNavBackStack<NavKey>(Destination.Home)
 
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
@@ -27,7 +27,7 @@ fun HomeGraph() {
             rememberViewModelStoreNavEntryDecorator(),
         ),
         entryProvider = entryProvider {
-            entry<Destinations.Home> { entry ->
+            entry<Destination.Home> { entry ->
                 Profile(
                     name = "Cucuruxo",
                     onNavigate = { destination ->
@@ -36,12 +36,12 @@ fun HomeGraph() {
                 )
             }
 
-            entry<Destinations.NameEditDialog> { entry ->
+            entry<Destination.NameEditDialog> { entry ->
                 Text("Name Edit Dialog")
 
             }
 
-            entry<Destinations.NameEditScreen> { entry ->
+            entry<Destination.NameEditScreen> { entry ->
                 Text("Name Edit Screen")
             }
         }

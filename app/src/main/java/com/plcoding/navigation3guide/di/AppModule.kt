@@ -1,6 +1,6 @@
 package com.plcoding.navigation3guide.di
 
-import com.plcoding.navigation3guide.note.NoteDetailViewModel
+import com.plcoding.navigation3guide.note.viewmodel.NoteDetailViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 

@@ -3,49 +3,57 @@ package com.plcoding.navigation3guide.navigation
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-sealed interface Destinations : NavKey {
+sealed interface Destination : NavKey {
     val title : String
 
     //Home
     @Serializable
-    data object HomeGraph : Destinations{
+    data object HomeGraph : Destination{
         override val title: String
             get() = this::class.simpleName.orEmpty()
     }
 
     @Serializable
-    data object Home : Destinations{
+    data object Home : Destination{
         override val title: String
             get() = this::class.simpleName.orEmpty()
     }
 
     @Serializable
-    data object NameEditDialog : Destinations{
+    data object NameEditDialog : Destination{
         override val title: String
             get() = this::class.simpleName.orEmpty()
     }
 
     @Serializable
-    data object NameEditScreen : Destinations{
+    data object NameEditScreen : Destination{
         override val title: String
             get() = this::class.simpleName.orEmpty()
     }
     
     //Notes
     @Serializable
-    data object NoteGraph : Destinations{
+    data object NoteGraph : Destination{
         override val title: String
             get() = this::class.simpleName.orEmpty()
     }
     
     @Serializable
-    data object NoteListScreen : Destinations{
+    data object NoteListScreen : Destination{
         override val title: String
             get() = this::class.simpleName.orEmpty()
     }
 
     @Serializable
-    data class NoteDetailScreen(val id: Int) : Destinations{
+    data class NoteDetailScreen(val id: Int) : Destination{
+        override val title: String
+            get() = this::class.simpleName.orEmpty()
+    }
+
+    //Settings
+
+    @Serializable
+    data object Settings : Destination{
         override val title: String
             get() = this::class.simpleName.orEmpty()
     }

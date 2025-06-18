@@ -13,7 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
-import com.plcoding.navigation3guide.navigation.Destinations
+import com.plcoding.navigation3guide.navigation.Destination
 
 @Composable
 fun Profile(
@@ -35,7 +35,7 @@ fun Profile(
         OutlinedButton(
             onClick = {
                 times++
-                onNavigate(Destinations.NameEditDialog)
+                onNavigate(Destination.NameEditDialog)
             },
         ) {
             Text("Change Name Dialog")
@@ -43,7 +43,7 @@ fun Profile(
         OutlinedButton(
             onClick = {
                 times++
-                onNavigate(Destinations.NameEditScreen)
+                onNavigate(Destination.NameEditScreen)
             },
         ) {
             Text("Change Name Screen")

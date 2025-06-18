@@ -5,11 +5,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,16 +32,16 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.plcoding.navigation3guide.navigation.graphs.HomeGraph
 import com.plcoding.navigation3guide.navigation.graphs.NoteGraph
+import com.plcoding.navigation3guide.settings.SettingsScreenUi
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NavigationRoot(
-    modifier: Modifier = Modifier
-) {
-    var currentBottomBarScreen: NavKey by rememberSaveable(stateSaver = BottomBarScreenSaver) {
-        mutableStateOf(Destinations.HomeGraph)
+fun NavigationRoot() {
+    var currentBottomBarScreen: Destination by rememberSaveable(stateSaver = BottomBarScreenSaver) {
+        mutableStateOf(Destination.HomeGraph)
     }
 
-    val backStack = rememberNavBackStack<NavKey>(Destinations.HomeGraph)
+    val backStack = rememberNavBackStack<Destination>(Destination.HomeGraph)
     val stateHolder = rememberSaveableStateHolder()
 
     Scaffold(
@@ -53,27 +57,51 @@ fun NavigationRoot(
                     }
                 }
             )
+        },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text((backStack.lastOrNull() as? Destination)?.title.orEmpty())
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            backStack.add(Destination.Settings)
+                        }
+                    ) {
+                        Icon(Icons.Default.Settings, contentDescription = null)
+                    }
+                }
+            )
         }
     ) { paddingValues ->
         NavDisplay(
-            modifier = modifier.padding(top = paddingValues.calculateTopPadding()),
+            modifier = Modifier.padding(paddingValues),
             backStack = backStack,
-            onBack = { backStack.removeLastOrNull() },
+            onBack = {
+                backStack.removeLastOrNull()
+                currentBottomBarScreen =
+                    backStack.lastOrNull() as? Destination ?: Destination.HomeGraph
+            },
             entryDecorators = listOf(
                 rememberSavedStateNavEntryDecorator(stateHolder),
                 rememberViewModelStoreNavEntryDecorator(),
             ),
             entryProvider = entryProvider {
-                entry<Destinations.NoteGraph> { entry ->
+                entry<Destination.NoteGraph> { entry ->
                     stateHolder.SaveableStateProvider(entry.title) {
                         NoteGraph()
                     }
                 }
 
-                entry<Destinations.HomeGraph> { entry ->
+                entry<Destination.HomeGraph> { entry ->
                     stateHolder.SaveableStateProvider(entry.title) {
                         HomeGraph()
                     }
+                }
+
+                entry<Destination.Settings> {
+                    SettingsScreenUi()
                 }
             }
         )
@@ -82,8 +110,8 @@ fun NavigationRoot(
 
 @Composable
 private fun BottomBar(
-    currentDestination: NavKey,
-    onDestinationClicked: (NavKey) -> Unit
+    currentDestination: Destination,
+    onDestinationClicked: (Destination) -> Unit
 ) {
 
     NavigationBar {
@@ -108,7 +136,7 @@ private data class Item(
     val id: Int,
     val title: String,
     val icon: ImageVector,
-    val destination: NavKey,
+    val destination: Destination,
 )
 
 private val Items = listOf(
@@ -116,23 +144,23 @@ private val Items = listOf(
         0,
         "Home",
         Icons.Default.Home,
-        Destinations.HomeGraph,
+        Destination.HomeGraph,
     ),
     Item(
         1,
         "List",
         Icons.Default.List,
-        Destinations.NoteGraph,
+        Destination.NoteGraph,
     ),
 )
 
-val BottomBarScreenSaver = Saver<NavKey, String>(
+val BottomBarScreenSaver = Saver<Destination, String>(
     save = { it::class.simpleName ?: "Uknown" },
     restore = {
         when (it) {
-            Destinations.HomeGraph::class.simpleName -> Destinations.HomeGraph
-            Destinations.NoteGraph::class.simpleName -> Destinations.NoteGraph
-            else -> Destinations.HomeGraph
+            Destination.HomeGraph::class.simpleName -> Destination.HomeGraph
+            Destination.NoteGraph::class.simpleName -> Destination.NoteGraph
+            else -> Destination.HomeGraph
         }
     }
 )
