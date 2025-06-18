@@ -24,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -84,7 +83,7 @@ fun NavigationRoot() {
                     backStack.lastOrNull() as? Destination ?: Destination.HomeGraph
             },
             entryDecorators = listOf(
-                rememberSavedStateNavEntryDecorator(stateHolder),
+                rememberSavedStateNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator(),
             ),
             entryProvider = entryProvider {
@@ -100,8 +99,10 @@ fun NavigationRoot() {
                     }
                 }
 
-                entry<Destination.Settings> {
-                    SettingsScreenUi()
+                entry<Destination.Settings> { entry ->
+                    stateHolder.SaveableStateProvider(entry.title) {
+                        SettingsScreenUi()
+                    }
                 }
             }
         )

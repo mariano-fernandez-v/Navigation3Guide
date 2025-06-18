@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.Scene
@@ -31,13 +32,13 @@ class TwoPaneScene<T: Any>(
                     modifier = Modifier
                         .weight(0.3f)
                 ) {
-                    firstEntry.content(firstEntry.key)
-                }
+                        firstEntry.content(firstEntry.key)
+                    }
                 Box(
                     modifier = Modifier
                         .weight(0.7f)
                 ) {
-                    secondEntry.content(secondEntry.key)
+                        secondEntry.content(secondEntry.key)
                 }
             }
         }
