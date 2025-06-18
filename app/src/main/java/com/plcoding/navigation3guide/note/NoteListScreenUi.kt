@@ -43,7 +43,7 @@ fun NoteListScreenUi(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(note.color))
+                        .background(note.color)
                         .clickable {
                             onNoteClick(note.id)
                         }

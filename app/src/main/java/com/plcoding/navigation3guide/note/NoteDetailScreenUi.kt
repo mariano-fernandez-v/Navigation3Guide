@@ -27,7 +27,7 @@ fun NoteDetailScreenUi(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(noteState.color))
+            .background(noteState.color)
             .padding(16.dp)
     ) {
         Text(

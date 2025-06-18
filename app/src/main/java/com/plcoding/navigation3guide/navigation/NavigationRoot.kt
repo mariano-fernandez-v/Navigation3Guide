@@ -28,8 +28,6 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.plcoding.navigation3guide.navigation.graphs.HomeGraph
 import com.plcoding.navigation3guide.navigation.graphs.NoteGraph
-import com.plcoding.navigation3guide.navigation.saver.rememberMutableStateListOf
-
 
 @Composable
 fun NavigationRoot(
