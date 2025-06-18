@@ -18,6 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
@@ -42,7 +43,7 @@ fun NoteListScreenUi(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(note.color)
+                        .background(Color(note.color))
                         .clickable {
                             onNoteClick(note.id)
                         }
@@ -58,8 +59,6 @@ fun NoteListScreenUi(
             }
         }
     } ?: LoaderScreen()
-
-
 }
 
 @Composable

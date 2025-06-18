@@ -38,11 +38,11 @@ fun NoteGraph() {
             }
 
             entry<Destinations.NoteDetailScreen> { entry ->
-                NoteDetailScreenUi(
-                    viewModel = koinViewModel {
-                        parametersOf(entry.id)
-                    }
-                )
+                    NoteDetailScreenUi(
+                        viewModel = koinViewModel {
+                            parametersOf(entry.id)
+                        }
+                    )
             }
         }
     )
